@@ -13,6 +13,8 @@ import google
 
 #make a google scrape soon
 
+#Create a segment that analyses the text so account or shortened words
+
 r = sr.Recognizer()
 mic = sr.Microphone()
 speak = Dispatch("SAPI.SpVoice")
