@@ -13,8 +13,6 @@ import google
 
 #make a google scrape soon
 
-#Create a segment that analyses the text so account or shortened words
-
 r = sr.Recognizer()
 mic = sr.Microphone()
 speak = Dispatch("SAPI.SpVoice")
@@ -37,9 +35,24 @@ def get_time():
     current_time=datetime.datetime.now()
     hour = str(current_time.hour)
     minute = str(current_time.minute)
-    ttime = hour + ' ' + minute
+    if int(hour) >= 12:
+        if int(hour) == 12:
+            ttime = hour + ' ' + minute + ' pm'
+        else:
+            ttime = str(int(hour)-12) + ' ' + minute + ' pm'
+    else:
+        if int(hour) != 12:
+            ttime = hour + ' ' + minute + ' am'
+        else:
+            ttime = str(int(hour)+12) + ' ' + minute + ' am'
     speak.Speak(ttime)
     return ttime
+
+def trans_text(s):
+    if "'" in s:
+        return s.replace("'", " i")
+    else:
+        return s
 
 class Intro(wx.Frame):
     def __init__(self, parent, title):
@@ -55,6 +68,9 @@ class Intro(wx.Frame):
         wx.CallAfter(self.OnStart)
         font = wx.Font(18, wx.SWISS, wx.ITALIC, wx.BOLD)
         static.SetFont(font)
+        with mic as source:
+            r.adjust_for_ambient_noise(source, duration=0.5)
+            audio = r.listen(source)
 
     def OnStart(self):
         count = 0
@@ -130,7 +146,7 @@ def _function(command, text, text1):
             speak.Speak(newlist[0])
             return('')
         else:
-            speak.Speak("here is a link forwhat you want")
+            speak.Speak("here is a link that could be of help")
             return(newlist[0])
     elif command == '':
         if text in bye_text:
@@ -149,12 +165,15 @@ def _function(command, text, text1):
             else:
                 speak.Speak(ans)
                 return(ans)
+        elif "google" in text:
+            speak.Speak('type "google" or "wiki" in the command box then say what you want me to search for')
+            return('type "google" or "wiki" in the command box then say what you want me to search for')
         else:
-            speak.Speak('Not found')
-            return('Not found')
+            speak.Speak('I don\'t know what to say')
+            return('I don\'t know what to say')
     else:
-        speak.Speak('Not in dictionary')
-        return('Not in dictionary')
+        speak.Speak('I don\'t know what to say')
+        return('I don\'t know what to say')
 
 class about_frame(wx.Frame):
     def __init__(self, parent, title):
@@ -259,10 +278,10 @@ class MainWindow(wx.Frame):
     def OnClickTalk(self, event):
         with mic as source:
             r.adjust_for_ambient_noise(source, duration=0.5)
-            speak.Speak("Talk")
+            speak.Speak(random.choice(["I'm listening", "speak", "I'm ready", "Okay, now"]))
             audio = r.listen(source)
         try:
-            text = r.recognize_google(audio)
+            text = trans_text(r.recognize_google(audio))
             self.text1.SetValue(text)
             a = self.text3.GetValue()
             command = a.lower()
@@ -274,10 +293,10 @@ class MainWindow(wx.Frame):
             else:
                 self.text2.SetValue(val)
         except:
-            speak.Speak("I can't get what you are saying, or check your internet connection") 
+            speak.Speak(random.choice(["I didn't catch that", "did not hear you", "can you say that again", "try saying that louder"])) 
 
     def OnClickOk(self, event):
-        text1 = self.text1.GetValue()
+        text1 = trans_text(self.text1.GetValue())
         a = self.text3.GetValue()
         command = a.lower()
         text = text1.lower()
