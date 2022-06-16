@@ -9,12 +9,14 @@ def retreive_from_file():
     count = 0
     while count < len(var):
         a = var[count]
+        a = a.rstrip("\n")
         b = var[count + 1]
-        if var[count] in mapping:
-            mapping[a.rstrip('\n')].append(b)
+        b = b.rstrip("\n")
+        if a in mapping:
+            mapping[a].append(b)
         else:
-            mapping[a.rstrip('\n')] = []
-            mapping[a.rstrip('\n')].append(b)
+            mapping[a] = []
+            mapping[a].append(b)
         count = count + 2
     file.close()
 

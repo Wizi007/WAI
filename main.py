@@ -339,10 +339,12 @@ class MainWindow(wx.Frame):
                 myfile.write('\n' + text1 + '\n')
                 myfile.write(text2)
                 myfile.close()
+                '''
                 myfile = open('info.txt', 'r')
                 read = myfile.read()
                 myfile.close()
                 print(read)
+                '''
                 ok1.retreive_from_file()
                 self.Close()
                 self.Destroy()
